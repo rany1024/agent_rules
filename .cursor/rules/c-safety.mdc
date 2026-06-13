@@ -1,0 +1,52 @@
+---
+description: C 健壮性（NULL 校验、缓冲区边界、头文件卫士、安全字符串）
+globs: **/*.{c,h}
+alwaysApply: false
+---
+
+# C 健壮性
+
+## 输入校验
+
+- 对外 API 入口校验指针与关键参数，非法输入返回错误码（见 `c-error-handling`）
+- 不信任外部输入的长度/范围，使用前做边界检查
+
+## 缓冲区与字符串
+
+- 禁止无边界的 `strcpy`、`strcat`、`sprintf`、`gets`
+- 改用带长度的 `strncpy`/`snprintf`/`memcpy`，并确保结果以 `\0` 结尾
+- 数组与缓冲区访问前确认索引在范围内
+- 计算缓冲区大小用 `sizeof`，不用硬编码长度
+
+## 头文件
+
+- 每个 `.h` 必须有 include guard（或 `#pragma once`）
+- 头文件中只放声明与宏；不放变量定义或函数实现（`static inline` 除外）
+- 头文件自包含：用到的类型自己 include，不依赖调用方的 include 顺序
+
+## 示例
+
+```c
+/* foo.h */
+#ifndef FOO_H
+#define FOO_H
+
+#include <stddef.h>
+
+int foo_copy_name(char *dst, size_t dst_size, const char *src);
+
+#endif /* FOO_H */
+```
+
+```c
+/* foo.c */
+int foo_copy_name(char *dst, size_t dst_size, const char *src)
+{
+    if (dst == NULL || src == NULL || dst_size == 0) {
+        return ERR_INVALID;
+    }
+
+    snprintf(dst, dst_size, "%s", src);   /* bounded, always null-terminated */
+    return RET_OK;
+}
+```

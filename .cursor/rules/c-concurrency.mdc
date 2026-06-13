@@ -1,0 +1,40 @@
+---
+description: C 并发与资源（线程安全、临界区、锁、内存生命周期）
+globs: **/*.{c,h}
+alwaysApply: false
+---
+
+# C 并发与资源
+
+## 线程安全
+
+- 多线程共享数据的读-改-写必须加锁保护，不假设单条语句原子
+- 锁的持有时间尽量短：临界区内禁止阻塞调用、IO、长循环
+- 固定加锁顺序，避免死锁；不要在持锁时回调外部未知代码
+- 对外接口注明是否线程安全（见 `c-comments`）
+- 库函数避免内部可变 static 状态，保持可重入
+
+## 内存与资源
+
+- 谁分配谁释放；分配与释放配对在同一抽象层
+- 所有 `malloc`/`calloc` 等返回值必须判空再使用
+- 释放后指针置 `NULL`，避免悬空指针与重复释放
+- 错误路径也要释放已申请资源，禁止泄漏（见 `c-error-handling`）
+- 优先复用缓冲/对象池，避免高频小块分配
+- 大缓冲区不要放在栈上（避免爆栈），用静态或动态分配
+
+## 示例
+
+```c
+int worker_update(worker_t *w, int delta)
+{
+    if (w == NULL) {
+        return ERR_INVALID;
+    }
+
+    pthread_mutex_lock(&w->lock);
+    w->value += delta;          /* short critical section, no blocking calls */
+    pthread_mutex_unlock(&w->lock);
+    return RET_OK;
+}
+```

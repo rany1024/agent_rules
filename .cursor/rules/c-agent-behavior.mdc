@@ -8,9 +8,9 @@ alwaysApply: true
 - 代码首先服务于人类维护者；默认选简洁可读方案，不为假想场景过度设计
 - 修改时匹配周围代码风格与模块边界，不顺手重构无关代码
 - 生成代码前：说明将改哪些文件、依赖哪些模块
-- 新函数预计超过 40 行：先拆函数或先给骨架再实现
+- 新函数预计超过 40 行：先拆函数或先给骨架再实现（长度阈值见 `c-format`）
 - 不引入项目未使用的库或模式（如无 RTOS 时不擅自用 pthread）
 - 不删除现有注释，除非确认已过时
 - 非显然的设计取舍，用注释说明「为什么」；源码注释必须英文 ASCII（见 `c-comments`）
 - 存在「简洁」与「过度通用」两种实现时，选简洁，并用一句话说明理由
-- 具体 C 规范见同目录 `c-format`、`c-naming`、`c-readability`、`c-comments`、`c-error-handling` 等规则
+- 具体 C 规范见同目录规则：`c-format`、`c-naming`、`c-readability`、`c-comments`、`c-error-handling`、`c-magic-numbers`、`c-module-state`、`c-modularity`、`c-types`、`c-concurrency`、`c-safety`

@@ -1,0 +1,35 @@
+---
+description: C 类型与数据（定宽整数、有符号性、const、不假设 int 宽度）
+globs: **/*.{c,h}
+alwaysApply: false
+---
+
+# C 类型与数据
+
+- 明确宽度的整数用 `<stdint.h>`：`uint8_t`、`int32_t` 等，不用裸 `int`/`long` 表达固定宽度
+- 不假设 `int`、`long`、指针的字节宽度；跨平台量用定宽类型或 `size_t`/`intptr_t`
+- 位运算在无符号类型上进行，避免有符号右移与符号扩展
+- 只读指针参数加 `const`；区分输入（`const T *`）与输出（`T *`）
+- 结构体/数组传参用指针，避免大对象按值拷贝
+- 比较有符号与无符号时显式转换，避免隐式提升导致的判断错误
+
+## 示例
+
+```c
+#include <stdint.h>
+#include <stddef.h>
+
+/* fixed-width, const-correct, unsigned for bit ops */
+int parse_header(const uint8_t *buf, size_t len, uint32_t *out_id)
+{
+    if (buf == NULL || out_id == NULL || len < 4) {
+        return ERR_INVALID;
+    }
+
+    *out_id = ((uint32_t)buf[0] << 24) |
+              ((uint32_t)buf[1] << 16) |
+              ((uint32_t)buf[2] << 8)  |
+              ((uint32_t)buf[3]);
+    return RET_OK;
+}
+```
