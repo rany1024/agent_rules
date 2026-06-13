@@ -18,16 +18,16 @@ alwaysApply: false
 ## 示例
 
 ```c
-void function(int param)  /* 函数左花括号在第二行 */
+void function(int param)  /* function brace on next line (Allman) */
 {
-    if (a < b) {  /* 控制语句：( 前加空格，{ 在同一行末尾 */
+    if (a < b) {  /* control stmt: space before (, brace on same line */
     }
 
-    int i = 0;  /* 变量靠近使用处声明，并带初始值 */
+    int i = 0;  /* declare near use, with initializer */
     for (i = 0; i < RET_MAX; i++) {
     }
 
-    /* 逻辑块之间空行隔开 */
+    /* blank line between logic blocks */
     while (1) {
     }
 }

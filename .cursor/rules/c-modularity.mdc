@@ -13,7 +13,7 @@ alwaysApply: false
 ## 示例（回调注册，避免循环依赖）
 
 ```c
-/* module_a.c：通过注册接口接收 module_b 的回调，不 include b_internal.h */
+/* module_a.c: accept callback from module_b via register API, no b_internal.h */
 typedef void (*b_event_cb_t)(int event);
 
 static b_event_cb_t s_on_b_event;
@@ -23,7 +23,7 @@ void module_a_register_b_callback(b_event_cb_t cb)
     s_on_b_event = cb;
 }
 
-/* module_b.c：初始化时向 module_a 注册 */
+/* module_b.c: register with module_a during init */
 void module_b_init(void)
 {
     module_a_register_b_callback(module_b_on_event);

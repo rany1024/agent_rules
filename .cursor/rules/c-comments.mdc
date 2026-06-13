@@ -1,0 +1,46 @@
+---
+description: C 注释规范（英文 ASCII、何时必写、何时禁止、嵌入式上下文说明）
+globs: **/*.{c,h}
+alwaysApply: false
+---
+
+# C 注释
+
+## 语言与字符
+
+- 源码注释（含 `//`、`/* */`、`/** */`、行尾注释）**必须使用英文**
+- 注释中禁止中文及其它非 ASCII 字符
+- 注释中禁止 emoji、全角标点等非 ASCII 符号
+- 确保源码在 ASCII / UTF-8 环境下解析、diff、工具链处理均不会出错
+
+## 必须注释
+
+- 文件头：模块职责、对外依赖、运行上下文（main loop / task / ISR）
+- 对外 API（`.h`）：参数含义、单位、返回值、是否阻塞、是否线程/ISR 安全
+- 非显然逻辑：说明「为什么这样做」（性能、硬件限制、协议约束）
+- 状态机：合法转移与禁止转移
+
+## 禁止注释
+
+- 复述代码本身（如 `i++; /* increment i */`，仍属废话，应避免）
+- 与代码不一致的过时注释（改代码须同步改注释）
+- 中文或非 ASCII 字符（见「语言与字符」）
+
+## 嵌入式额外要求
+
+- 可能阻塞的函数：注明最大阻塞时间或超时行为
+- 仅供特定上下文调用：注明 `main loop/task only` 或 `ISR-safe`
+
+## 示例
+
+```c
+/**
+ * @brief Wait for ACK, block until received or timeout
+ * @param timeout_ms Timeout in milliseconds
+ * @return RET_OK on success; ERR_TIMEOUT on timeout
+ * @note Call from task context only, not from ISR
+ */
+int protocol_wait_ack(int timeout_ms);
+```
+
+反例（禁止在源码注释中使用中文、emoji、全角标点等非 ASCII 字符）。

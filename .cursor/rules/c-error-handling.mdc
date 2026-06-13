@@ -1,0 +1,36 @@
+---
+description: C 错误处理（返回码约定、资源生命周期、失败路径）
+globs: **/*.{c,h}
+alwaysApply: false
+---
+
+# C 错误处理
+
+- 统一返回约定：`0` 成功，负值为错误码（`enum` 或 `#define`）
+- 错误码在对外 `.h` 定义，名称表达原因（`ERR_TIMEOUT`），禁止 `ERR_3` 类命名
+- 失败路径须明确：返回错误 / 记录日志 / 释放已占资源，禁止静默忽略
+- 资源谁申请谁释放；同一抽象层内配对 `open/close`、`init/deinit`、`lock/unlock`
+- 日志或断言信息含模块名与关键参数，便于现场排查
+- 错误码定义见 `c-magic-numbers`；命名见 `c-naming`
+
+## 示例
+
+```c
+enum {
+    RET_OK = 0,
+    ERR_INVALID = -1,
+    ERR_TIMEOUT = -2,
+    ERR_BUSY    = -3,
+};
+
+int module_do_work(void)
+{
+    if (s_info.is_busy) {
+        return ERR_BUSY;
+    }
+    if (wait_ready_timeout_ms(100) != RET_OK) {
+        return ERR_TIMEOUT;
+    }
+    return RET_OK;
+}
+```

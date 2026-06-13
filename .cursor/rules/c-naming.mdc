@@ -1,0 +1,29 @@
+---
+description: C 命名规范（函数、变量、单位、状态机，禁止含糊命名）
+globs: **/*.{c,h}
+alwaysApply: false
+---
+
+# C 命名
+
+- 函数名动词开头，表达「动作 + 对象」，如 `sensor_read_temp`、`queue_push`
+- 禁止：`process`、`handle`、`do_work`、`tmp`、`data`、`buf2` 等含糊名称
+- 布尔变量/返回值用 `is_` / `has_` / `can_` 前缀
+- 带单位的量：单位写进名字，如 `timeout_ms`、`delay_us`、`size_bytes`
+- 缩写仅限团队通用词（ISR、DMA、GPIO、RTOS）；其它用全称
+- 状态机：状态 `STATE_xxx`，事件 `EVT_xxx`
+- 文件内 static 变量以 `s_` 为前缀；模块对外 API 不带 `s_`
+
+## 示例
+
+```c
+/* BAD */
+int proc(int d);
+void handle(void);
+int timeout;
+
+/* GOOD */
+int motor_set_speed_rpm(int rpm);
+void queue_drain_pending(void);
+int wait_ack_timeout_ms;
+```
