@@ -1,0 +1,31 @@
+---
+description: C 模块化与解耦（单向依赖、回调注册，避免循环 include）
+globs: **/*.{c,h}
+alwaysApply: false
+---
+
+# C 模块化
+
+- 新建函数或文件时，考虑模块边界与解耦
+- 模块间原则上只允许单向依赖，避免循环依赖
+- 若因性能或可读性必须互相引用，优先用回调注册、函数指针表或明确接口，而非 `#include` 交叉引用内部头文件
+
+## 示例（回调注册，避免循环依赖）
+
+```c
+/* module_a.c：通过注册接口接收 module_b 的回调，不 include b_internal.h */
+typedef void (*b_event_cb_t)(int event);
+
+static b_event_cb_t s_on_b_event;
+
+void module_a_register_b_callback(b_event_cb_t cb)
+{
+    s_on_b_event = cb;
+}
+
+/* module_b.c：初始化时向 module_a 注册 */
+void module_b_init(void)
+{
+    module_a_register_b_callback(module_b_on_event);
+}
+```

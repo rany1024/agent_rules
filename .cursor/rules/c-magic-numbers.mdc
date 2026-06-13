@@ -1,0 +1,27 @@
+---
+description: C 魔数规范（#define、enum、static const 的使用层级）
+globs: **/*.{c,h}
+alwaysApply: false
+---
+
+# C 魔数
+
+- 禁止直接使用魔数
+- 数值会被外部引用（参数、返回值、跨模块使用）时，在对外接口 `.h` 中用 `#define` 或 `enum` 定义；多个相关取值优先用 `enum`
+- 仅在单文件内多函数共用时，在文件顶部用 `enum`、`#define` 或 `static const` 定义
+- 仅在单个函数内使用时，在函数体内定义为 `static const` 变量
+- 名称不直观时，须在注释中说明含义与单位
+- 常量可定义在 `.h`；运行时变量状态仍封装在各 `.c` 文件内
+
+## 示例（`.h` 中定义）
+
+```c
+#define RET_OK   0
+#define RET_FAIL (-1)
+#define RET_MAX  100
+
+enum {
+    STATE_IDLE = 0,
+    STATE_BUSY,
+};
+```

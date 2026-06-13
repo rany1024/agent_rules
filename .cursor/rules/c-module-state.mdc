@@ -1,0 +1,31 @@
+---
+description: C 文件内全局状态（static 结构体封装，禁止跨文件 extern 变量）
+globs: **/*.{c,h}
+alwaysApply: false
+---
+
+# C 文件内全局状态
+
+- 禁止滥用全局变量
+- 原则上不允许跨多个 `.c` 文件的全局变量；禁止用 `extern` 暴露跨文件变量
+- 跨模块共享运行时状态，通过模块 API（init/process/getter）访问，不直接暴露内部 `static` 结构体
+- 同一 `.c` 文件内，必须跨函数共享的状态，集中在文件开头，用单个结构体封装
+
+## 示例
+
+```c
+#include <pthread.h>
+
+typedef struct {
+    int val1;
+    int val2;
+    pthread_t recv_pid;
+    pthread_mutex_t val1_lock;
+} xx_info_t;
+
+static xx_info_t s_info = {
+    .val1 = 1,
+    .val2 = 2,
+    .val1_lock = PTHREAD_MUTEX_INITIALIZER,
+};
+```
